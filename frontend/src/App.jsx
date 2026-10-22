@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [isRegistering, setIsRegistering] = useState(false);
@@ -14,7 +16,7 @@ function App() {
   const [auditLogs, setAuditLogs] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/')
+    fetch(`${API_URL}/`)
       .then(res => res.json())
       .then(data => setStatus(data.status === 'active' ? 'Operational' : 'Online'))
       .catch(() => setStatus('Offline'));
@@ -28,12 +30,12 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const docRes = await fetch('http://127.0.0.1:8000/documents/', {
+      const docRes = await fetch(`${API_URL}/documents/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (docRes.ok) setDocuments(await docRes.json());
 
-      const auditRes = await fetch('http://127.0.0.1:8000/audit/', {
+      const auditRes = await fetch(`${API_URL}/audit/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (auditRes.ok) setAuditLogs(await auditRes.json());
@@ -48,7 +50,7 @@ function App() {
 
     if (isRegistering) {
       try {
-        const response = await fetch('http://127.0.0.1:8000/auth/register', {
+        const response = await fetch(`${API_URL}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),
@@ -69,7 +71,7 @@ function App() {
       formData.append('password', password);
 
       try {
-        const response = await fetch('http://127.0.0.1:8000/auth/token', {
+        const response = await fetch(`${API_URL}/auth/token`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: formData,
@@ -102,7 +104,7 @@ function App() {
     formData.append('file', selectedFile);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/documents/upload', {
+      const response = await fetch(`${API_URL}/documents/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
