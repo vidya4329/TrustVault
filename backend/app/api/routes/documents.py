@@ -78,4 +78,4 @@ def download_document(
     doc = verify_document_access(document_id, current_user, db, request)
     if not doc or not os.path.exists(doc.file_path):
         raise HTTPException(status_code=404, detail="File not found on server storage")
-    return FileResponse(doc.file_path, filename=os.path.basename(doc.file_path))
+    return FileResponse(doc.file_path, filename=os.path.basename(doc.file_path)) 
