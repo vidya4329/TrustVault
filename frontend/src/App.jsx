@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://trustvault-oey4.onrender.com';
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [isRegistering, setIsRegistering] = useState(false);
@@ -29,7 +30,7 @@ function App() {
 
   const fetchData = async () => {
     try {
-      const docRes = await fetch(`${API_URL}/documents/`, {
+      const docRes = await fetch(`${API_URL}/api/documents/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (docRes.ok) setDocuments(await docRes.json());
@@ -101,9 +102,11 @@ function App() {
 
     const formData = new FormData();
     formData.append('file', selectedFile);
+    formData.append('title', selectedFile.name);
+    formData.append('category', 'General');
 
     try {
-      const response = await fetch(`${API_URL}/documents/upload`, {
+      const response = await fetch(`${API_URL}/api/documents/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
@@ -114,7 +117,7 @@ function App() {
         setSelectedFile(null);
         fetchData();
       } else {
-        setFeedback({ text: data.detail || 'Upload failed', type: 'error' });
+        setFeedback({ text: typeof data.detail === 'string' ? data.detail : 'Upload failed', type: 'error' });
       }
     } catch (err) {
       setFeedback({ text: 'Error executing file upload.', type: 'error' });
