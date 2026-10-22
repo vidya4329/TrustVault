@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://trustvault-oey4.onrender.com';
-
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [isRegistering, setIsRegistering] = useState(false);
