@@ -13,6 +13,8 @@ from app.services.audit_service import log_audit_event
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
 def check_is_privileged(role):
+    if not role:
+        return False
     role_str = str(role).split('.')[-1].lower()
     return role_str in ["owner", "admin"]
 
@@ -25,8 +27,8 @@ async def upload_document(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if not check_is_privileged(current_user.role):
-        log_audit_event(db, "UPLOAD", "DENIED", request, current_user.id, "Role not permitted to upload")
+    if not check_is_privileged(getattr(current_user, 'role', None)):
+        log_audit_event(db, "UPLOAD", "DENIED", request, getattr(current_user, 'id', 1), "Role not permitted to upload")
         raise HTTPException(status_code=403, detail="Only Owners and Admins can upload documents.")
     
     os.makedirs(settings.STORAGE_DIR, exist_ok=True)
@@ -56,13 +58,14 @@ def list_documents(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    role_str = str(current_user.role).split('.')[-1].lower()
+    role_str = str(getattr(current_user, 'role', '')).split('.')[-1].lower()
     if role_str == "admin":
         docs = db.query(Document).all()
     elif role_str == "owner":
         docs = db.query(Document).filter(Document.owner_id == current_user.id).all()
     else:
-        docs = [g.document for g in current_user.grants]
+        grants = getattr(current_user, 'grants', [])
+        docs = [g.document for g in grants if hasattr(g, 'document') and g.document]
     return docs
 
 @router.get("/{document_id}/download")
@@ -73,6 +76,6 @@ def download_document(
     db: Session = Depends(get_db)
 ):
     doc = verify_document_access(document_id, current_user, db, request)
-    if not os.path.exists(doc.file_path):
+    if not doc or not os.path.exists(doc.file_path):
         raise HTTPException(status_code=404, detail="File not found on server storage")
     return FileResponse(doc.file_path, filename=os.path.basename(doc.file_path))
