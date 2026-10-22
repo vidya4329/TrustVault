@@ -13,7 +13,6 @@ from app.services.audit_service import log_audit_event
 router = APIRouter(prefix="/api/documents", tags=["documents"])
 
 def check_is_privileged(role):
-    # Safely handle both enum instances, raw strings, upper/lowercase
     role_str = str(role).split('.')[-1].lower()
     return role_str in ["owner", "admin"]
 
@@ -26,7 +25,6 @@ async def upload_document(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Only Owner and Admin can upload documents
     if not check_is_privileged(current_user.role):
         log_audit_event(db, "UPLOAD", "DENIED", request, current_user.id, "Role not permitted to upload")
         raise HTTPException(status_code=403, detail="Only Owners and Admins can upload documents.")
@@ -64,7 +62,6 @@ def list_documents(
     elif role_str == "owner":
         docs = db.query(Document).filter(Document.owner_id == current_user.id).all()
     else:
-        # Viewers see documents they have grants for
         docs = [g.document for g in current_user.grants]
     return docs
 
