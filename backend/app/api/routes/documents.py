@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.security import get_current_user
-from app.models import User, Document, RoleEnum
+from app.models import User, Document
 from app.config import settings
 from app.services.document_service import verify_document_access
 from app.services.audit_service import log_audit_event
@@ -78,4 +78,4 @@ def download_document(
     doc = verify_document_access(document_id, current_user, db, request)
     if not doc or not os.path.exists(doc.file_path):
         raise HTTPException(status_code=404, detail="File not found on server storage")
-    return FileResponse(doc.file_path, filename=os.path.basename(doc.file_path)) 
+    return FileResponse(doc.file_path, filename=os.path.basename(doc.file_path))
