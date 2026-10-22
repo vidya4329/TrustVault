@@ -35,7 +35,7 @@ function App() {
       });
       if (docRes.ok) setDocuments(await docRes.json());
 
-      const auditRes = await fetch(`${API_URL}/audit/`, {
+      const auditRes = await fetch(`${API_URL}/api/audit/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (auditRes.ok) setAuditLogs(await auditRes.json());
@@ -98,7 +98,10 @@ function App() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      setFeedback({ text: 'Please choose a file first before uploading.', type: 'error' });
+      return;
+    }
 
     const formData = new FormData();
     formData.append('file', selectedFile);
