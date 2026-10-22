@@ -35,8 +35,8 @@ function App() {
       });
       if (docRes.ok) setDocuments(await docRes.json());
 
-      // Optional: Fetch audit logs if your backend supports it
-      const auditRes = await fetch(`${API_URL}/api/documents/audit/`, {
+      // Updated audit endpoint to match backend route
+      const auditRes = await fetch(`${API_URL}/api/audit/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (auditRes.ok) setAuditLogs(await auditRes.json());
