@@ -35,7 +35,8 @@ function App() {
       });
       if (docRes.ok) setDocuments(await docRes.json());
 
-      const auditRes = await fetch(`${API_URL}/api/audit/`, {
+      // Optional: Fetch audit logs if your backend supports it
+      const auditRes = await fetch(`${API_URL}/api/documents/audit/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (auditRes.ok) setAuditLogs(await auditRes.json());
@@ -107,6 +108,8 @@ function App() {
     formData.append('file', selectedFile);
     formData.append('title', selectedFile.name);
     formData.append('category', 'General');
+
+    setFeedback({ text: 'Uploading (server may take up to 50s if waking up)...', type: 'success' });
 
     try {
       const response = await fetch(`${API_URL}/api/documents/upload`, {
