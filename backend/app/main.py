@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
-from app.models import User, Document, AccessGrant, AuditLog
 from app.api.routes import auth, documents
-
+from backend.app.database import engine, Base
 # Create database tables automatically on startup
 Base.metadata.create_all(bind=engine)
 
