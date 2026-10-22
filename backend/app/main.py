@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import auth, documents
 from backend.app.database import engine, Base
+
 # Create database tables automatically on startup
 Base.metadata.create_all(bind=engine)
 
@@ -13,15 +14,15 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update with your frontend URL in production
+    allow_origins=["*"],  # Allows all origins in development/production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include API routers
-app.include_router(auth.router)
-app.include_router(documents.router)
+# Include API routers with correct prefixes
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 
 @app.get("/")
 def read_root():
