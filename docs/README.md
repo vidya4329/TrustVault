@@ -20,20 +20,19 @@ TrustVault operates on a client-server architecture separating frontend UI inter
    * String-based runtime role verification (`check_is_privileged`) prevents application crashes or standard unhandled HTTP 500 errors.
 
 ## 3. End-to-End Workflow
+
 [ User Browser ]
-       │
-       ├── 1. POST /api/auth/login ──> Returns JWT Access Token
-       │
-       ├── 2. POST /api/documents/upload (With Authorization Header)
-       │        │
-       │        ├── FastAPI checks JWT token & calls check_is_privileged()
-       │        ├── Validates Owner/Admin role
-       │        ├── Saves file to storage with UUID name
-       │        └── Writes event entry to /api/audit-logs
-       │
-       └── 3. GET /api/documents / GET /api/audit-logs
-                └── Fetches documents list & security activity history
-                
+  │
+  ├── 1. POST /api/auth/login ──> Returns JWT Access Token
+  │
+  └── 2. POST /api/documents/upload (With Authorization Header)
+         │
+         ├── FastAPI checks JWT token & calls check_is_privileged()
+         ├── Validates Owner/Admin role
+         ├── Saves file to storage with UUID name
+         └── Writes event entry to /api/audit-logs
+
+         
 ## 4. Local Installation & Setup
 ### Prerequisites
 * Python 3.10+
@@ -58,6 +57,7 @@ npm install
 npm run dev
 
 5. Live Demo & Deployed Links
+
 -Live Frontend Web App: https://trust-vault-kohl.vercel.app
 
 -GitHub Repository: https://github.com/vidya4329/TrustVault
