@@ -21,17 +21,11 @@ TrustVault operates on a client-server architecture separating frontend UI inter
 
 ## 3. End-to-End Workflow
 
-[ User Browser ]
-  │
-  ├── 1. POST /api/auth/login ──> Returns JWT Access Token
-  │
-  └── 2. POST /api/documents/upload (With Authorization Header)
-         │
-         ├── FastAPI checks JWT token & calls check_is_privileged()
-         ├── Validates Owner/Admin role
-         ├── Saves file to storage with UUID name
-         └── Writes event entry to /api/audit-logs
+The TrustVault workflow processes user authentication, role validation, and secure file operations through three sequential stages:
 
+1. **Authentication & Token Generation:** The user submits credentials via the frontend to the FastAPI backend (`POST /api/auth/login`). Upon successful verification, the system issues a secure JWT access token to authenticate subsequent requests.
+2. **Privilege Validation & File Upload:** Authorized users with Owner or Admin credentials send a document upload request (`POST /api/documents/upload`) with their JWT header. The backend validates the token, executes the `check_is_privileged()` role check, sanitizes the filename with a unique UUID prefix, and stores the file securely.
+3. **Audit Tracking & Retrieval:** Every upload, download, or access attempt immediately logs a security event entry to the audit trail (`/api/audit-logs`). Users can subsequently fetch permitted document lists and review complete activity audit logs from the frontend dashboard.
          
 ## 4. Local Installation & Setup
 ### Prerequisites
